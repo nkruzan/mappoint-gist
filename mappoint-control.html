@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<script type="text/javascript" >
+<!--
+var MapCtrl = {
+
+    initCount: 0,
+    
+    //Number of tries before aborting creating control
+    initTries: 5,
+    
+    init: function(){
+        try {
+            this.MapControl = MappointControl1;
+            this.MapControl.NewMap(2);//Change to 1 for North America
+            this.map = this.MapControl.ActiveMap;
+        } 
+        catch (e) {
+            try {
+                this.MapControl = document.getElementById('MappointControl1');
+                this.MapControl.NewMap(2);
+                this.map = this.MapControl.ActiveMap;
+            } 
+            catch (e) {
+                this.initCount++;
+                if (this.initCount < this.initTries) {
+                    setTimeout('MapCtrl.init()', 2000);
+                }
+                else {
+                    alert('Can not intalise MapPoint control');
+                }
+            }
+        }
+    },
+    
+    //Save used throught out to stop the annoying save message if you change the map
+    save: function(){
+        this.map.Saved = true;
+    },
+    
+    //Close map
+    close: function(){
+        this.save();
+        this.MapControl.CloseMap();
+    },
+    
+    zoomIn: function(factor){
+        if (factor && factor > 0) {
+            for (var i = 0; i < factor; i++) {
+                this.map.ZoomIn();
+            }
+        }
+        else {
+            this.map.ZoomIn();
+        }
+        this.save();
+    },
+    
+    zoomOut: function(){
+        if (factor && factor > 0) {
+            for (var i = 0; i < factor; i++) {
+                this.map.ZoomOut();
+            }
+        }
+        else {
+            this.map.ZoomOut();
+        }
+        this.save();
+    },
+    
+    zoomToPostcode: function(pc, country){
+        var findRes = this.map.FindResults(pc + ',' + country);
+        if (findRes.count > 0) {
+            findRes.Item(1).GoTo();
+            this.zoomIn(3);
+            this.save();
+            return findRes.Item(1);
+        }
+    },
+    
+    zoomToLatLong: function(latidude, longtidude){
+        if (latidude && longtidude) {
+            var loc = this.map.GetLocation(latidude, longtidude);
+            loc.GoTo();
+            this.zoomIn(10);
+            this.save();
+            return loc;
+        }
+    },
+    
+    addPushpin: function(loc,name){
+        this.map.AddPushpin(loc, name);
+        this.save();
+    }
+}
+ MapCtrl.init();
+
+
+//Demo function
+function zoom(){
+    var fac = document.getElementById('factor').value;
+    if (fac && typeOf(fac) == "number" && fac > 0) {
+        MapCtrl.zoomIn(fac);
+    }
+    else{
+        alert("Add a numeric factor");
+    }
+}
+-->
+</script>
+ 
+<title>Map Point Control</title>
+</head>
+ 
+<body>
+    <objext id="MappointControl1" width="489" height="435"
+classid="CLSID:8F78D7FC-BAE4-46A4-A79A-052356AB3DD4">
+        <param name="BorderStyle" value="0">
+        <param name="MousePointer" value="0">
+        <param name="TabStop" value="0">
+        <param name="Appearance" value="1">
+        <param name="PaneState" value="3">
+        <Pparam name="UnitsOfMeasure" value="1">
+    </object>
+<p><label for="postcode">Factor:</label><input type="text" id="postcode">
+<input type="button" value="Zoom in by factor" onclick="zoom()" />
+</p>
+</body>
+</html>
